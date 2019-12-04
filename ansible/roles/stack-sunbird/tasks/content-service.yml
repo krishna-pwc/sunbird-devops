@@ -5,11 +5,13 @@
 
 - name: remove stopped containers
   shell: docker container rm $(docker ps -a | grep Exited | awk '{print $1}')
-  delegate_to: "{{groups['swarm-nodes']}}"
+  delegate_to: "{{ item }}"
+  with_items: "{{groups['swarm-nodes']}}"
 
 - name: remove docker images
   shell: docker image prune -af
-  delegate_to: "{{groups['swarm-nodes']}}"
+  delegate_to: "{{ item }}"
+  with_items: "{{groups['swarm-nodes']}}"
 
 - name: Save configurations into an env file
   become: yes
