@@ -2,7 +2,15 @@
 - name: Remove content-service
   shell: "docker service rm content-service"
   ignore_errors: yes
-  
+
+- name: remove stopped containers
+  shell: docker container rm $(docker ps -a | grep Exited | awk '{print $1}')
+  delegate_to: "{{groups['swarm-nodes']}}"
+
+- name: remove docker images
+  shell: docker image prune -af
+  delegate_to: "{{groups['swarm-nodes']}}"
+
 - name: Save configurations into an env file
   become: yes
   template: src=content-service_application.conf dest=/home/deployer/config/application.conf mode=0644
